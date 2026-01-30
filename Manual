@@ -1,0 +1,293 @@
+#  Wireshark Networking Basics & Packet Analysis
+
+A beginner-friendly guide and hands-on notes for understanding **IP addresses, ports, TCP/UDP, DNS, QUIC, and HTTP analysis using Wireshark**.
+
+This repository is intended for students and beginners in **Networking, Cybersecurity, and DevOps** who want practical exposure to packet capturing and protocol analysis.
+
+---
+
+## 📌 Topics Covered
+
+* Source IP & Destination IP
+* Ports and Well-Known Ports
+* Network Interfaces (Linux)
+* Wireshark Interface Setup
+* TCP 3-Way Handshake
+* UDP and DNS Traffic
+* QUIC Protocol (YouTube Traffic)
+* HTTP GET & POST Analysis
+* Why HTTP is Insecure
+
+---
+
+## 🌐 Source IP & Destination IP
+
+Every network packet has a **source IP** and a **destination IP**.
+
+* The **source IP** shows where the packet is coming from.
+* The **destination IP** shows where the packet is going.
+
+For example:
+When you open a website, your computer’s IP is the source IP, and the web server’s IP is the destination IP.
+
+---
+
+## 🚪 Ports
+
+Ports are like **doors on a computer**.
+They tell the operating system which service should receive the data.
+
+For example:
+
+* Web traffic uses port **80** for HTTP
+* Secure web traffic uses port **443** for HTTPS
+
+---
+
+## 🔢 Port Hierarchy (Well-Known Ports)
+
+Some ports are reserved for specific services:
+
+| Service | Port |
+| ------- | ---- |
+| HTTP    | 80   |
+| HTTPS   | 443  |
+| FTP     | 21   |
+| SSH     | 22   |
+| DNS     | 53   |
+| SMTP    | 25   |
+
+---
+
+## 🖥️ Checking Network Interfaces (Linux)
+
+Open terminal and type:
+
+```
+ifconfig
+```
+
+You may see interfaces like:
+
+* **elp20 / eth0 / enp0s3** → Ethernet interface (wired connection)
+* **wlp1s0 / wlan0** → Wireless interface (WiFi)
+* **lo** → Loopback interface (used for internal communication inside the system)
+* **proton0 / tun0** → OpenVPN interface
+* **wg0** → WireGuard VPN interface
+
+> NOTE: Interface names may differ depending on operating system and distribution. These examples are from Linux.
+
+---
+
+## 🧰 Wireshark Interface Setup
+
+Before capturing packets:
+
+1. Open Wireshark
+2. Right-click **Profile** → Create or select profile
+3. Go to **Edit → Preferences**
+4. Explore options such as:
+
+   * Capture
+   * Colors
+   * Layout
+   * Packet Diagram (if available)
+
+Customize Wireshark according to your preference.
+
+Select the interface you are connected to and start capture.
+
+---
+
+## 🔁 TCP (Transmission Control Protocol)
+
+TCP is a **connection-oriented protocol**.
+
+It uses a **3-Way Handshake** to establish a connection:
+
+1. SYN
+2. SYN-ACK
+3. ACK
+
+### Wireshark Display Filters
+
+Show all TCP packets:
+
+```
+tcp
+```
+
+SYN packet:
+
+```
+tcp.flags.syn == 1 && tcp.flags.ack == 0
+```
+
+SYN-ACK packet:
+
+```
+tcp.flags.syn == 1 && tcp.flags.ack == 1
+```
+
+ACK packet:
+
+```
+tcp.flags.syn == 0 && tcp.flags.ack == 1
+```
+
+---
+
+## 📦 UDP (User Datagram Protocol)
+
+UDP is **connectionless** and does **not guarantee packet delivery**.
+
+Used in:
+
+* Online games
+* Video calls
+* Streaming
+
+---
+
+## 🌍 DNS Using UDP Port 53
+
+DNS uses **UDP port 53** to resolve domain names into IP addresses.
+
+Run in terminal:
+
+```
+nslookup google.com
+```
+
+Example Output:
+
+```
+Server: 127.0.0.53
+Address: 127.0.0.53#53
+
+Name: google.com
+Address: 142.250.193.78
+Name: google.com
+Address: 2404:6800:4002:82a::200e
+```
+
+Wireshark Filter:
+
+```
+udp.port == 53
+```
+
+Expand:
+DNS → Queries → Hostname (e.g., [www.google.com](http://www.google.com))
+
+---
+
+## 📺 QUIC Protocol (YouTube Traffic)
+
+YouTube uses **QUIC**, a protocol built on top of UDP.
+
+Features of QUIC:
+
+* Encryption (TLS)
+* Faster connection setup
+* Congestion control
+
+Wireshark Filter:
+
+```
+quic
+```
+
+QUIC prevents raw video from being sent as plain UDP, making traffic more secure and reliable.
+
+---
+
+## 🌐 HTTP (Hypertext Transfer Protocol)
+
+HTTP is an **application-layer protocol** used for transferring web data between client and server.
+
+### GET Request (Retrieve data)
+
+```
+http.request.method == "GET"
+```
+
+### POST Request (Send data / forms / login)
+
+```
+http.request.method == "POST"
+```
+
+---
+
+## 🔓 Why HTTP Is Insecure
+
+Steps:
+
+1. Open an HTTP website (example: [https://demo.testfire.net/](https://demo.testfire.net/))
+2. Go to login page
+3. Enter:
+
+   * Username: test
+   * Password: 12345
+4. Keep Wireshark capturing
+5. Apply filter:
+
+```
+http
+```
+
+Or directly:
+
+```
+http.request.method == "POST"
+```
+
+Open the POST packet → Expand HTTP → Form Data
+
+You will see:
+
+```
+username=test
+password=12345
+```
+
+Credentials appear in **plain text**.
+
+This proves why HTTP is insecure and why HTTPS is required.
+
+---
+
+## 🎥 Video Demonstration
+
+[https://youtu.be/aMu-hqTaspc?si=Cvz90W1Lsgan-muV](https://youtu.be/aMu-hqTaspc?si=Cvz90W1Lsgan-muV)
+
+---
+
+## 🛠 Tools Used
+
+* Wireshark
+* Linux Terminal
+* nslookup
+
+---
+
+## 🎯 Learning Outcomes
+
+After completing this lab, you will understand:
+
+* How packets flow in a network
+* Difference between TCP and UDP
+* How DNS resolves domain names
+* How HTTP traffic can be inspected
+* Why encryption matters
+
+---
+
+## 👤 Author
+
+Alish Thapa
+
+---
+
+⭐ If you find this helpful, consider starring the repository.
